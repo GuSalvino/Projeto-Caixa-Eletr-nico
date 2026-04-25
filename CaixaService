@@ -1,0 +1,94 @@
+public class CaixaService {
+
+    private int[][] cedulas;
+    private int cotaMinima = 0;
+
+    public CaixaService() {
+        cedulas = new int[][] {
+            {100, 10},
+            {50, 10},
+            {20, 10},
+            {10, 10},
+            {5, 10},
+            {2, 10}
+        };
+    }
+
+    //  SAQUE
+    public String sacar(int valor) {
+
+        int restante = valor;
+        int[] usadas = new int[6];
+
+        for (int i = 0; i < cedulas.length; i++) {
+            int nota = cedulas[i][0];
+            int qtd = cedulas[i][1];
+
+            int usar = restante / nota;
+
+            if (usar > qtd) {
+                usar = qtd;
+            }
+
+            usadas[i] = usar;
+            restante -= usar * nota;
+        }
+
+        if (restante != 0) {
+            return "Não foi possível realizar o saque";
+        }
+
+        for (int i = 0; i < cedulas.length; i++) {
+            cedulas[i][1] -= usadas[i];
+        }
+
+        String resposta = "Saque realizado:\n";
+
+        for (int i = 0; i < usadas.length; i++) {
+            if (usadas[i] > 0) {
+                resposta += "Nota " + cedulas[i][0] + ": " + usadas[i] + "\n";
+            }
+        }
+
+        return resposta;
+    }
+
+    //  RELATÓRIO
+    public String pegaRelatorioCedulas() {
+        String resposta = "";
+
+        for (int i = 0; i < cedulas.length; i++) {
+            resposta += "Nota " + cedulas[i][0] + ": " + cedulas[i][1] + "\n";
+        }
+
+        return resposta;
+    }
+
+    //  TOTAL
+    public String pegaValorTotalDisponivel() {
+        int total = 0;
+
+        for (int i = 0; i < cedulas.length; i++) {
+            total += cedulas[i][0] * cedulas[i][1];
+        }
+
+        return "R$ " + total;
+    }
+
+    //  REPOSIÇÃO
+    public String reposicaoCedulas(int cedula, int quantidade) {
+        for (int i = 0; i < cedulas.length; i++) {
+            if (cedulas[i][0] == cedula) {
+                cedulas[i][1] += quantidade;
+                return "Reposição feita!";
+            }
+        }
+        return "Cédula inválida!";
+    }
+
+    //  COTA MÍNIMA
+    public String armazenaCotaMinima(int minimo) {
+        cotaMinima = minimo;
+        return "Cota mínima definida: " + minimo;
+    }
+}
