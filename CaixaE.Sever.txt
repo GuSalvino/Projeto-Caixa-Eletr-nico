@@ -1,0 +1,136 @@
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class CaixaService {
+
+    private int[][] cedulas;
+    private int cotaMinima = 0;
+    private List<String> extrato = new ArrayList<>();
+
+    public CaixaService() {
+        cedulas = new int[][] {
+            {100, 10},
+            {50, 10},
+            {20, 10},
+            {10, 10},
+            {5, 10},
+            {2, 10}
+        };
+    }
+
+    // SAQUE
+    public String sacar(int valor) {
+
+        // Verifica cota mínima ANTES do saque
+        int totalAtual = calcularTotal();
+        if (totalAtual <= cotaMinima) {
+            return "Caixa Vazio: Chame o Operador";
+        }
+
+        int restante = valor;
+        int[] usadas = new int[6];
+        int totalCedulas = 0;
+
+        for (int i = 0; i < cedulas.length; i++) {
+            int nota = cedulas[i][0];
+            int qtd = cedulas[i][1];
+
+            int usar = restante / nota;
+            if (usar > qtd) usar = qtd;
+
+            usadas[i] = usar;
+            restante -= usar * nota;
+            totalCedulas += usar;
+        }
+
+        // Verifica se o saque foi possível
+        if (restante != 0) {
+            return "Saque não realizado por falta de cédulas";
+        }
+
+        // Verifica limite de 30 cédulas
+        if (totalCedulas > 30) {
+            return "Saque não permitido: limite de 30 cédulas por saque excedido";
+        }
+
+        // Debita as cédulas
+        for (int i = 0; i < cedulas.length; i++) {
+            cedulas[i][1] -= usadas[i];
+        }
+
+        // Monta resposta
+        StringBuilder resposta = new StringBuilder("Saque realizado:\n");
+        for (int i = 0; i < usadas.length; i++) {
+            if (usadas[i] > 0) {
+                resposta.append("Nota R$").append(cedulas[i][0])
+                        .append(": ").append(usadas[i]).append("\n");
+            }
+        }
+
+        // Verifica cota mínima APÓS o saque
+        int totalDepois = calcularTotal();
+        if (totalDepois <= cotaMinima) {
+            resposta.append("\n⚠ Caixa Vazio: Chame o Operador");
+        }
+
+        // Registra no extrato
+        extrato.add("Saque de R$" + valor + " | Saldo restante: R$" + totalDepois);
+
+        return resposta.toString();
+    }
+
+    // RELATÓRIO
+    public String pegaRelatorioCedulas() {
+        StringBuilder resposta = new StringBuilder();
+        for (int[] cedula : cedulas) {
+            resposta.append("Nota R$").append(cedula[0])
+                    .append(": ").append(cedula[1]).append(" cédulas\n");
+        }
+        return resposta.toString();
+    }
+
+    // TOTAL
+    public String pegaValorTotalDisponivel() {
+        return "R$ " + calcularTotal();
+    }
+
+    // REPOSIÇÃO
+    public String reposicaoCedulas(int cedula, int quantidade) {
+        for (int[] c : cedulas) {
+            if (c[0] == cedula) {
+                c[1] += quantidade;
+                extrato.add("Reposição: " + quantidade + " cédulas de R$" + cedula);
+                return "Reposição realizada: " + quantidade + " notas de R$" + cedula;
+            }
+        }
+        return "Cédula inválida!";
+    }
+
+    // COTA MÍNIMA
+    public String armazenaCotaMinima(int minimo) {
+        cotaMinima = minimo;
+        return "Cota mínima definida: R$" + minimo;
+    }
+
+    // EXTRATO
+    public String getExtrato() {
+        if (extrato.isEmpty()) return "Nenhuma movimentação registrada.";
+        StringBuilder sb = new StringBuilder("=== EXTRATO ===\n");
+        for (String linha : extrato) {
+            sb.append(linha).append("\n");
+        }
+        sb.append("===============\n");
+        sb.append("Saldo atual: ").append(pegaValorTotalDisponivel());
+        return sb.toString();
+    }
+
+    // Auxiliar
+    private int calcularTotal() {
+        int total = 0;
+        for (int[] c : cedulas) {
+            total += c[0] * c[1];
+        }
+        return total;
+    }
+}

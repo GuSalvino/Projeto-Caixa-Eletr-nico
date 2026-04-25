@@ -1,0 +1,176 @@
+
+
+import javax.swing.*;
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.SystemColor;
+
+public class CaixaEletronicoo extends JFrame {
+
+    private JPanel contentPane;
+    //
+    private CaixaService caixa = new CaixaService();
+
+    public static void main(String[] args) {
+        CaixaEletronicoo frame = new CaixaEletronicoo();
+        frame.setVisible(true);
+    }
+
+    public CaixaEletronicoo() {
+    	setForeground(new Color(0, 0, 0));
+    	setBackground(new Color(0, 0, 0));
+    	setFont(new Font("Dialog", Font.BOLD, 12));
+
+        setTitle("Caixa Eletronico");
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setBounds(100, 100, 580, 550);
+
+        contentPane = new JPanel();
+        contentPane.setBackground(Color.LIGHT_GRAY);
+        contentPane.setLayout(null);
+        setContentPane(contentPane);
+
+        // SAQUE
+        JButton btnSaque = new JButton("Efetuar Saque");
+        btnSaque.setForeground(new Color(0, 0, 0));
+        btnSaque.setBackground(SystemColor.activeCaption);
+        btnSaque.setBounds(20, 129, 520, 60);
+        btnSaque.setFont(new Font("Tahoma", Font.BOLD, 16));
+
+        btnSaque.addActionListener(e -> {
+            String valorStr = JOptionPane.showInputDialog("Quanto deseja sacar?");
+            try {
+                int valor = Integer.parseInt(valorStr);
+                String resposta = caixa.sacar(valor);
+                JOptionPane.showMessageDialog(null, resposta);
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(null, "Valor inválido!");
+            }
+        });
+
+        contentPane.add(btnSaque);
+
+        //  RELATÓRIO
+        JButton btnRelatorio = new JButton("Relatório de Cédulas");
+        btnRelatorio.setBackground(SystemColor.activeCaption);
+        btnRelatorio.setForeground(new Color(0, 0, 0));
+        btnRelatorio.setFont(new Font("Tahoma", Font.BOLD, 13));
+        btnRelatorio.setBounds(20, 229, 250, 60);
+
+        btnRelatorio.addActionListener(e -> {
+            JOptionPane.showMessageDialog(null, caixa.pegaRelatorioCedulas());
+        });
+
+        contentPane.add(btnRelatorio);
+
+        //  REPOSIÇÃO
+        JButton btnReposicao = new JButton("Reposição");
+        btnReposicao.setBackground(SystemColor.activeCaption);
+        btnReposicao.setForeground(new Color(0, 0, 0));
+        btnReposicao.setFont(new Font("Tahoma", Font.BOLD, 13));
+        btnReposicao.setBounds(290, 229, 250, 60);
+
+        btnReposicao.addActionListener(e -> {
+            try {
+                int n100 = Integer.parseInt(JOptionPane.showInputDialog("100:"));
+                int n50 = Integer.parseInt(JOptionPane.showInputDialog("50:"));
+                int n20 = Integer.parseInt(JOptionPane.showInputDialog("20:"));
+                int n10 = Integer.parseInt(JOptionPane.showInputDialog("10:"));
+                int n5 = Integer.parseInt(JOptionPane.showInputDialog("5:"));
+                int n2 = Integer.parseInt(JOptionPane.showInputDialog("2:"));
+
+                caixa.reposicaoCedulas(100, n100);
+                caixa.reposicaoCedulas(50, n50);
+                caixa.reposicaoCedulas(20, n20);
+                caixa.reposicaoCedulas(10, n10);
+                caixa.reposicaoCedulas(5, n5);
+                caixa.reposicaoCedulas(2, n2);
+
+                JOptionPane.showMessageDialog(null, "Reposição realizada!");
+
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(null, "Erro!");
+            }
+        });
+
+        contentPane.add(btnReposicao);
+
+        //  TOTAL
+        JButton btnTotal = new JButton("Valor Total");
+        btnTotal.setForeground(new Color(0, 0, 0));
+        btnTotal.setBackground(SystemColor.activeCaption);
+        btnTotal.setFont(new Font("Tahoma", Font.BOLD, 13));
+        btnTotal.setBounds(20, 315, 250, 60);
+
+        btnTotal.addActionListener(e -> {
+            JOptionPane.showMessageDialog(null, "Total: " + caixa.pegaValorTotalDisponivel());
+        });
+
+        contentPane.add(btnTotal);
+
+        //  COTA MÍNIMA
+        JButton btnCota = new JButton("Cota Mínima");
+        btnCota.setBackground(SystemColor.activeCaption);
+        btnCota.setForeground(new Color(0, 0, 0));
+        btnCota.setFont(new Font("Tahoma", Font.BOLD, 13));
+        btnCota.setBounds(290, 315, 250, 60);
+
+        btnCota.addActionListener(e -> {
+            String valorStr = JOptionPane.showInputDialog("Cota mínima:");
+            try {
+                int valor = Integer.parseInt(valorStr);
+                JOptionPane.showMessageDialog(null, caixa.armazenaCotaMinima(valor));
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(null, "Valor inválido!");
+            }
+        });
+
+        contentPane.add(btnCota);
+
+        //  SAIR
+        JButton btnSair = new JButton("Sair");
+        btnSair.setBackground(new Color(165, 42, 42));
+        btnSair.setForeground(new Color(0, 0, 0));
+        btnSair.setFont(new Font("Tahoma", Font.BOLD, 13));
+        btnSair.setBounds(153, 428, 250, 60);
+
+        btnSair.addActionListener(e -> {
+            JOptionPane.showMessageDialog(null, caixa.getExtrato(), 
+                "Extrato Final", JOptionPane.INFORMATION_MESSAGE);
+            System.exit(0);
+        });
+
+        contentPane.add(btnSair);
+        
+        JLabel lblNewLabel = new JLabel("-Modulo de Adiministrador-");
+        lblNewLabel.setForeground(SystemColor.desktop);
+        lblNewLabel.setFont(new Font("Tahoma", Font.BOLD, 17));
+        lblNewLabel.setBounds(20, 190, 255, 28);
+        contentPane.add(lblNewLabel);
+        
+        JLabel lblModuloDeCliente = new JLabel("-Modulo de Cliente- ");
+        lblModuloDeCliente.setForeground(SystemColor.desktop);
+        lblModuloDeCliente.setFont(new Font("Tahoma", Font.BOLD, 17));
+        lblModuloDeCliente.setBounds(20, 90, 188, 28);
+        contentPane.add(lblModuloDeCliente);
+        
+        JLabel lblModuloDeCliente_1 = new JLabel("-Modulo de Cliente- ");
+        lblModuloDeCliente_1.setForeground(SystemColor.desktop);
+        lblModuloDeCliente_1.setFont(new Font("Tahoma", Font.BOLD, 17));
+        lblModuloDeCliente_1.setBounds(20, 386, 188, 28);
+        contentPane.add(lblModuloDeCliente_1);
+        
+        JPanel panel = new JPanel();
+        panel.setForeground(SystemColor.textHighlightText);
+        panel.setBackground(SystemColor.textHighlight);
+        panel.setBounds(0, 0, 566, 75);
+        contentPane.add(panel);
+        panel.setLayout(null);
+        
+        JLabel lblNewLabel_1 = new JLabel("Caixa Eletronico");
+        lblNewLabel_1.setBounds(172, 11, 202, 42);
+        panel.add(lblNewLabel_1);
+        lblNewLabel_1.setForeground(new Color(0, 0, 0));
+        lblNewLabel_1.setFont(new Font("Tahoma", Font.BOLD, 22));
+    }
+}
